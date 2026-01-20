@@ -1,76 +1,71 @@
-import { useEffect, useState } from "react";
-import { api } from "~/services/api";
+import { useLoaderData } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
+import { resolveMediaUrl } from "~/lib/media";
 
-/**
- * Profile Tagged Grid
- *
- * Backend endpoint:
- *   GET http://127.0.0.1:3000/api/tagged/grid
- *
- * IMPORTANT:
- * - Use shared axios client (app/services/api.ts)
- * - Do NOT call fetch("/api/...") because React Router Dev can intercept it
- */
+type Tag = { name: string; x: number; y: number };
+type TaggedItem = { id: number; imageUrl: string; tags: Tag[] };
 
-type TaggedItem = {
-  id: number;
-  img_url: string;
-  caption: string;
-  created_at: string;
-  tagged_by: string;
-};
+export async function loader({ request }: LoaderFunctionArgs) {
+  const url = new URL("/api/tagged/grid", request.url);
+  const res = await fetch(url);
+  if (!res.ok) throw new Response("Failed to load tagged", { status: res.status });
+  return res.json();
+}
 
-export default function ProfileTaggedGrid() {
-  const [items, setItems] = useState<TaggedItem[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    api
-      .get<TaggedItem[]>("/tagged/grid") // -> http://127.0.0.1:3000/api/tagged/grid
-      .then((res) => {
-        if (!cancelled) setItems(res.data);
-      })
-      .catch((err) => {
-        console.error("Failed to load tagged:", err);
-        if (!cancelled) setError("Failed to load tagged posts");
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  if (error) return <div style={{ padding: 16 }}>{error}</div>;
-  if (!items.length) return <div style={{ padding: 16 }}>No tagged posts yet</div>;
+export default function ProfileTaggedGridRoute() {
+  const data = useLoaderData() as { ok: boolean; items: TaggedItem[] };
+  const items = data.items || [];
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>Tagged</h2>
+    <div
+      style={{
+        display: "grid",
+        gap: 14,
+        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+        alignItems: "start",
+      }}
+    >
+      {items.map((t) => (
+        <div
+          key={t.id}
+          style={{
+            position: "relative",
+            borderRadius: 18,
+            overflow: "hidden",
+            border: "1px solid rgba(255,255,255,0.10)",
+            background: "rgba(255,255,255,0.04)",
+          }}
+        >
+          <img
+            src={resolveMediaUrl(t.imageUrl) || undefined}
+            alt="Tagged"
+            style={{ width: "100%", height: 300, objectFit: "cover", display: "block" }}
+          />
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 12,
-        }}
-      >
-        {items.map((t) => (
-          <div key={t.id} style={{ border: "1px solid #ddd", borderRadius: 8, overflow: "hidden" }}>
-            <img
-              src={t.img_url}
-              alt={t.caption}
-              style={{ width: "100%", height: 180, objectFit: "cover", display: "block" }}
-            />
-            <div style={{ padding: 10 }}>
-              <div style={{ fontWeight: 600 }}>{t.caption}</div>
-              <div style={{ fontSize: 12, opacity: 0.7 }}>Tagged by: {t.tagged_by}</div>
-              <div style={{ fontSize: 12, opacity: 0.7 }}>{t.created_at}</div>
+          {(t.tags || []).slice(0, 3).map((tag, idx) => (
+            <div
+              key={idx}
+              style={{
+                position: "absolute",
+                left: `${(tag.x ?? 0.2) * 100}%`,
+                top: `${(tag.y ?? 0.2) * 100}%`,
+                transform: "translate(-50%, -50%)",
+                background: "rgba(0,0,0,0.62)",
+                color: "white",
+                padding: "6px 10px",
+                borderRadius: 999,
+                fontSize: 12,
+                border: "1px solid rgba(255,255,255,0.14)",
+                backdropFilter: "blur(6px)",
+                whiteSpace: "nowrap",
+                pointerEvents: "none",
+              }}
+            >
+              {tag.name}
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }

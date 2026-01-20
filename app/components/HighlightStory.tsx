@@ -1,4 +1,5 @@
 import type { Highlight } from "../schemas/highlight.schema";
+import { resolveMediaUrl } from "~/lib/media";
 
 /**
  * HighlightStory
@@ -12,7 +13,7 @@ export function HighlightStory({ highlight }: { highlight: Highlight }) {
 
       <div className="w-full aspect-[9/16] bg-gray-900">
         <img
-          src={highlight.cover_image_url}
+          src={resolveMediaUrl(highlight.cover_image_url) || undefined}
           alt={highlight.title}
           className="w-full h-full object-cover"
         />

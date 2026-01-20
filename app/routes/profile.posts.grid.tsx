@@ -1,33 +1,32 @@
 import { useLoaderData } from "react-router";
-import { api } from "../services/api";
+import { fetchJSON } from "../lib/api";
+import { resolveMediaUrl } from "~/lib/media";
 
-type Post = { id: number; img_url: string; caption: string | null; created_at: string };
+type Post = { id: number; username: string; caption: string; img_url: string };
 
-export async function loader() {
-  const res = await api.get<Post[]>("/posts");
-  return res.data;
+export async function loader({ request }: { request: Request }) {
+  return fetchJSON(request, "/api/posts");
 }
 
-export default function PostsGrid() {
-  const posts = useLoaderData() as Post[];
+function Card({ p }: { p: Post }) {
+  return (
+    <div style={{ border: "1px solid var(--border)", borderRadius: 16, overflow: "hidden", background: "var(--bg)" }}>
+      <img src={resolveMediaUrl(p.img_url) || undefined} alt={p.caption} style={{ width: "100%", height: 360, objectFit: "cover" }} />
+      <div style={{ padding: 14 }}>
+        <div style={{ fontWeight: 800, marginBottom: 6 }}>{p.username}</div>
+        <div style={{ opacity: 0.9 }}>{p.caption}</div>
+      </div>
+    </div>
+  );
+}
+
+export default function IndexRoute() {
+  const data = useLoaderData() as { ok: boolean; items: Post[] };
+  const items = data.items || [];
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gap: 6,
-      }}
-    >
-      {posts.map((p) => (
-        <div key={p.id} style={{ aspectRatio: "1 / 1", overflow: "hidden", background: "#f3f3f3" }}>
-          <img
-            src={p.img_url}
-            alt={p.caption ?? "post"}
-            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-          />
-        </div>
-      ))}
+    <div style={{ display: "grid", gap: 22, gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", alignItems: "start" }}>
+      {items.map((p) => <Card key={p.id} p={p} />)}
     </div>
   );
 }

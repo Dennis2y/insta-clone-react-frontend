@@ -1,0 +1,71 @@
+import { type RouteConfig, index, route } from "@react-router/dev/routes";
+import { type RouteConfig, index, route } from "@react-router/dev/routes";
+
+
+export default [
+export default [
+  // Landing page ("/")
+  // Landing page ("/")
+  index("routes/_index.tsx"),
+  index("routes/_index.tsx"),
+
+
+  // Auth pages
+  // Auth pages
+  route("login", "routes/login.tsx"),
+  route("login", "routes/login.tsx"),
+  route("signup", "routes/signup.tsx"),
+  route("signup", "routes/signup.tsx"),
+
+
+  // Optional routes that already exist in your folder
+  // Optional routes that already exist in your folder
+  route("home", "routes/home.tsx"),
+  route("home", "routes/home.tsx"),
+  route("create", "routes/create.tsx"),
+  route("search", "routes/search.tsx"),
+  route("search", "routes/search.tsx"),
+  route("reels", "routes/reels.tsx"),
+  route("reels", "routes/reels.tsx"),
+
+
+  // Grids (used by profile tab UI sometimes)
+  // Grids (used by profile tab UI sometimes)
+  route("reels/grid", "routes/reels.grid.tsx"),
+  route("reels/grid", "routes/reels.grid.tsx"),
+  route("tagged/grid", "routes/tagged.grid.tsx"),
+  route("tagged/grid", "routes/tagged.grid.tsx"),
+  route("highlights/grid/:id", "routes/highlights.grid.tsx"),
+  route("highlights/grid/:id", "routes/highlights.grid.tsx"),
+
+
+  // Profile + tabs
+  // Profile + tabs
+  route("create", "routes/create.tsx"),
+  route("create", "routes/create.tsx"),
+  route("profile", "routes/profile.tsx", [
+  route("profile", "routes/profile.tsx", [
+    index("routes/profile._index.tsx"),
+    index("routes/profile._index.tsx"),
+
+
+    route("posts", "routes/profile.posts.tsx"),
+    route("posts", "routes/profile.posts.tsx"),
+    route("posts/grid", "routes/profile.posts.grid.tsx"),
+    route("posts/grid", "routes/profile.posts.grid.tsx"),
+
+
+    route("reels", "routes/profile.reels.tsx"),
+    route("reels", "routes/profile.reels.tsx"),
+    route("reels/grid", "routes/profile.reels.grid.tsx"),
+    route("reels/grid", "routes/profile.reels.grid.tsx"),
+
+
+    route("tagged", "routes/profile.tagged.tsx"),
+    route("tagged", "routes/profile.tagged.tsx"),
+    route("tagged/grid", "routes/profile.tagged.grid.tsx"),
+    route("tagged/grid", "routes/profile.tagged.grid.tsx"),
+  ]),
+  ]),
+] satisfies RouteConfig;
+] satisfies RouteConfig;

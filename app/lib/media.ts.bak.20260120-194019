@@ -1,0 +1,23 @@
+const DEFAULT_API_BASE = "http://127.0.0.1:3000";
+
+function getApiBase() {
+  const envBase =
+    (import.meta as any)?.env?.VITE_API_BASE_URL ||
+    (import.meta as any)?.env?.VITE_API_URL ||
+    "";
+  const base = (typeof envBase === "string" && envBase.trim()) ? envBase.trim() : DEFAULT_API_BASE;
+  return base.replace(/\/+$/, "");
+}
+
+export function resolveMediaUrl(input?: string | null) {
+  const raw = typeof input === "string" ? input.trim() : "";
+  if (!raw) return "";
+
+  if (/^https?:\/\//i.test(raw)) return raw;
+
+  const base = getApiBase();
+
+  if (raw.startsWith("/")) return `${base}${raw}`;
+
+  return `${base}/uploads/${raw}`;
+}

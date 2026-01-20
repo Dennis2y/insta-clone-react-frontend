@@ -1,0 +1,93 @@
+import { useLoaderData } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
+import { fetchJSON } from "../lib/api";
+import { resolveMediaUrl } from "~/lib/media";
+
+type TaggedItem = {
+  id: number;
+  imageUrl: string;
+  caption?: string;
+  username?: string;
+  tags?: string[];
+};
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  return fetchJSON(request, "/api/tagged/grid");
+}
+
+function TagChip({ text }: { text: any }) {
+  return (
+    <span
+      style={{
+        padding: "6px 10px",
+        borderRadius: 999,
+        background: "rgba(0,0,0,0.55)",
+        border: "1px solid rgba(255,255,255,0.18)",
+        fontSize: 12,
+        fontWeight: 700,
+        backdropFilter: "blur(8px)",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {typeof text === "string" ? text : (text as any)?.name ?? ""}
+    </span>
+  );
+}
+
+export default function TaggedRoute() {
+  const data = useLoaderData() as { ok: boolean; items: TaggedItem[] };
+  const items = data.items || [];
+
+  return (
+    <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
+      {items.map((t) => (
+        <div
+          key={t.id}
+          style={{
+            position: "relative",
+            borderRadius: 14,
+            overflow: "hidden",
+            border: "1px solid rgba(255,255,255,0.08)",
+            background: "rgba(255,255,255,0.03)",
+          }}
+        >
+          <img
+            src={((()=>{const raw=(t.image??t.img_url??t.imageUrl);return (typeof raw==="string"&&raw.trim().length>0)?resolveMediaUrl(raw):undefined;})()) || undefined}
+            alt={t.caption || "tagged"}
+            style={{ width: "100%", height: 220, objectFit: "cover", display: "block" }}
+          />
+
+          {/* top-left tag (first tag) */}
+          {t.tags?.[0] ? (
+            <div style={{ position: "absolute", left: 10, top: 10 }}>
+              <TagChip text={(typeof t.tags[0]==="string"?t.tags[0]:(t.tags[0] as any)?.name ?? "")} />
+            </div>
+          ) : null}
+
+          {/* bottom overlay with all tags */}
+          {t.tags?.length ? (
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                bottom: 0,
+                padding: 10,
+                background: "linear-gradient(to top, rgba(0,0,0,0.70), rgba(0,0,0,0))",
+                display: "flex",
+                gap: 8,
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "flex-start",
+              }}
+            >
+              {t.tags.map((tg) => (
+                <TagChip key={tg.name} text={tg.name} />
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  );
+}

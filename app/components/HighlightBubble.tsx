@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Highlight } from "../schemas/highlight.schema";
+import { resolveMediaUrl } from "~/lib/media";
 
 /**
  * HighlightBubble
@@ -14,7 +15,7 @@ export function HighlightBubble({ highlight }: { highlight: Highlight }) {
     >
       <div className="h-16 w-16 rounded-full overflow-hidden border bg-gray-200">
         <img
-          src={highlight.cover_image_url}
+          src={resolveMediaUrl(highlight.cover_image_url) || undefined}
           alt={highlight.title}
           className="h-full w-full object-cover"
         />

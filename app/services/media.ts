@@ -1,16 +1,18 @@
-export function normalizeImageUrl(input: string): string {
-  try {
-    const url = new URL(input);
+const DEFAULT_API_ORIGIN = "http://127.0.0.1:3000";
 
-    if (url.hostname.includes("images.unsplash.com")) {
-      if (!url.searchParams.get("auto")) url.searchParams.set("auto", "format");
-      if (!url.searchParams.get("fit")) url.searchParams.set("fit", "crop");
-      if (!url.searchParams.get("w")) url.searchParams.set("w", "900");
-      if (!url.searchParams.get("q")) url.searchParams.set("q", "80");
-    }
+// If you later deploy, you can set VITE_API_ORIGIN in .env
+export const API_ORIGIN =
+  (import.meta as any).env?.VITE_API_ORIGIN || DEFAULT_API_ORIGIN;
 
-    return url.toString();
-  } catch {
-    return input;
-  }
+/**
+ * Convert backend-stored paths like "/uploads/abc.jpg"
+ * into a browser-loadable absolute URL like "http://127.0.0.1:3000/uploads/abc.jpg"
+ */
+export function publicUrl(path?: string | null) {
+  if (!path) return "";
+  if (/^https?:\/\//i.test(path)) return path;
+
+  // Ensure single slash join
+  if (path.startsWith("/")) return `${API_ORIGIN}${path}`;
+  return `${API_ORIGIN}/${path}`;
 }

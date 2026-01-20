@@ -1,0 +1,192 @@
+import * as React from "react";
+import { useLoaderData, useNavigate } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
+import { fetchJSON } from "../lib/api";
+import { resolveMediaUrl } from "~/lib/media";
+
+type User = {
+  id?: number;
+  username?: string;
+  avatar?: string;
+};
+
+type Post = {
+  id: number;
+  username?: string;
+  caption?: string;
+  img_url?: string;
+};
+
+type SearchData = {
+  ok?: boolean;
+  q?: string;
+  users?: User[];
+  posts?: Post[];
+  items?: any[];
+};
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const url = new URL(request.url);
+  const q = (url.searchParams.get("q") || "").trim();
+
+  // If empty query: don't call backend, just show empty state
+  if (!q) return { ok: true, q, users: [], posts: [] };
+
+  // Backend route exists: GET /api/search
+  // We pass q as query param
+  return fetchJSON(request, `/api/search?q=${encodeURIComponent(q)}`);
+}
+
+function pickUsers(d: SearchData): User[] {
+  const u = (d as any)?.users;
+  return Array.isArray(u) ? u : [];
+}
+
+function pickPosts(d: SearchData): Post[] {
+  const p = (d as any)?.posts;
+  if (Array.isArray(p)) return p;
+
+  // fallback: some APIs return "items"
+  const items = (d as any)?.items;
+  if (Array.isArray(items)) return items;
+  return [];
+}
+
+export default function SearchRoute() {
+  const data = useLoaderData() as SearchData;
+  const navigate = useNavigate();
+
+  const urlQ = (data?.q || "").trim();
+  const [q, setQ] = React.useState(urlQ);
+
+  const users = pickUsers(data);
+  const posts = pickPosts(data);
+
+  return (
+    <div style={{ maxWidth: 980, margin: "0 auto", padding: "12px 14px" }}>
+      <h2 style={{ margin: "0 0 10px 0" }}>Search</h2>
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const next = q.trim();
+          navigate(next ? `/search?q=${encodeURIComponent(next)}` : "/search");
+        }}
+        style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 14 }}
+      >
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search users or posts..."
+          style={{
+            flex: "1 1 300px",
+            padding: "10px 12px",
+            borderRadius: 12,
+            border: "1px solid rgba(0,0,0,0.12)",
+          }}
+        />
+        <button
+          type="submit"
+          style={{
+            padding: "10px 14px",
+            borderRadius: 12,
+            fontWeight: 800,
+            border: "1px solid rgba(0,0,0,0.12)",
+          }}
+        >
+          Search
+        </button>
+      </form>
+
+      {!urlQ ? (
+        <div style={{ opacity: 0.75, fontWeight: 600 }}>Type something and press Search.</div>
+      ) : (
+        <>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 10, opacity: 0.85 }}>
+            <div><b>{users.length}</b> users</div>
+            <div><b>{posts.length}</b> posts</div>
+          </div>
+
+          {/* USERS */}
+          {users.length ? (
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontWeight: 900, marginBottom: 8 }}>Users</div>
+              <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
+                {users.map((u, idx) => {
+                  const avatar = resolveMediaUrl(u.avatar);
+                  return (
+                    <div
+                      key={(u.id ?? u.username ?? idx) as any}
+                      style={{
+                        display: "flex",
+                        gap: 10,
+                        alignItems: "center",
+                        border: "1px solid rgba(0,0,0,0.12)",
+                        borderRadius: 14,
+                        padding: 10,
+                      }}
+                    >
+                      <div style={{ width: 44, height: 44, borderRadius: 999, overflow: "hidden", flex: "0 0 auto" }}>
+                        {avatar ? (
+                          <img
+                            src={avatar}
+                            alt={u.username || "user"}
+                            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                          />
+                        ) : (
+                          <div style={{ width: "100%", height: "100%", background: "rgba(0,0,0,0.08)" }} />
+                        )}
+                      </div>
+                      <div style={{ fontWeight: 900 }}>{u.username || "unknown"}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
+
+          {/* POSTS */}
+          {posts.length ? (
+            <div>
+              <div style={{ fontWeight: 900, marginBottom: 8 }}>Posts</div>
+              <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
+                {posts.map((p, idx) => {
+                  const src = resolveMediaUrl(p.img_url);
+                  return (
+                    <div
+                      key={(p.id ?? idx) as any}
+                      style={{
+                        borderRadius: 14,
+                        overflow: "hidden",
+                        border: "1px solid rgba(0,0,0,0.12)",
+                        background: "rgba(255,255,255,0.03)",
+                      }}
+                    >
+                      {src ? (
+                        <img
+                          src={src}
+                          alt={p.caption || "post"}
+                          style={{ width: "100%", height: 220, objectFit: "cover", display: "block" }}
+                        />
+                      ) : (
+                        <div style={{ height: 220, background: "rgba(0,0,0,0.08)" }} />
+                      )}
+                      <div style={{ padding: 10 }}>
+                        <div style={{ fontWeight: 900, fontSize: 13 }}>{p.username || "user"}</div>
+                        <div style={{ fontSize: 13, opacity: 0.9 }}>{p.caption || ""}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
+
+          {!users.length && !posts.length ? (
+            <div style={{ marginTop: 10, opacity: 0.75, fontWeight: 700 }}>No results for “{urlQ}”.</div>
+          ) : null}
+        </>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,68 @@
+import * as React from "react";
+
+// ✅ Static imports from /public/images (Vite will resolve these correctly)
+import landing1 from "/images/landing-1.png";
+// Add these when you create/copy them:
+import landing2 from "/images/landing-2.png";
+import landing3 from "/images/landing-3.png";
+import landing4 from "/images/landing-4.png";
+
+export default function LandingPage() {
+  const images = [landing1, landing2, landing3, landing4];
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <div className="mx-auto max-w-6xl px-4 py-10">
+        <div className="grid gap-10 md:grid-cols-2 md:items-center">
+          {/* LEFT: Day 1 hero */}
+          <div>
+            <h1 className="text-4xl font-semibold leading-tight md:text-5xl">
+              Welcome back
+            </h1>
+            <p className="mt-4 text-white/70">
+              Day 1 landing restored • Day 4 features kept
+            </p>
+
+            <div className="mt-8 flex gap-3">
+              <a
+                href="/login"
+                className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-black hover:opacity-90"
+              >
+                Log in
+              </a>
+              <a
+                href="/signup"
+                className="rounded-xl border border-white/20 px-4 py-2 text-sm font-medium text-white hover:bg-white/10"
+              >
+                Sign up
+              </a>
+            </div>
+
+            <footer className="mt-10 text-xs text-white/40">
+              Day 1 landing restored • Day 4 features kept
+            </footer>
+          </div>
+
+          {/* RIGHT: phone / image gallery */}
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-4 shadow-lg">
+            <div className="grid grid-cols-2 gap-3">
+              {images.map((src, i) => (
+                <div
+                  key={i}
+                  className="aspect-[9/16] overflow-hidden rounded-2xl bg-black/40"
+                >
+                  <img
+                    src={src}
+                    alt={`Landing ${i + 1}`}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

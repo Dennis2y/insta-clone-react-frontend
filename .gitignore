@@ -7,3 +7,8 @@ build
 .env
 .env.*
 *.log
+.react-router
+app.db
+database.db
+**/*.bak.*
+PATH_TO_LANDING_FILE

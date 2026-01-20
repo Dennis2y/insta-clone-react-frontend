@@ -1,19 +1,16 @@
 import { defineConfig } from "vite";
-import { reactRouter } from "@react-router/dev/vite";
+import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
-import { viteStaticCopy } from "vite-plugin-static-copy";
+import { reactRouter } from "@react-router/dev/vite";
 
 export default defineConfig({
   plugins: [
-    reactRouter(),
+    react(),
     tsconfigPaths(),
-    viteStaticCopy({
-      targets: [
-        { src: "public/_redirects", dest: "." }
-      ]
-    }),
+    reactRouter(),   // REQUIRED for react-router build
   ],
   build: {
     outDir: "build/client",
+    emptyOutDir: true,
   },
 });

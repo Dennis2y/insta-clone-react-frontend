@@ -6,7 +6,8 @@
     "build": "vite build",
     "dev": "vite",
     "start": "vite preview",
-    "typecheck": "react-router typegen && tsc"
+    "typecheck": "react-router typegen && tsc",
+    "postbuild": "node -e \"const fs=require('fs');fs.mkdirSync('dist',{recursive:true});try{fs.copyFileSync('public/_redirects','dist/_redirects');console.log('copied _redirects');}catch(e){console.log('no _redirects to copy');}\""
   },
   "dependencies": {
     "@react-router/serve": "7.12.0",

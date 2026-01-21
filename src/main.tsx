@@ -5,6 +5,5 @@ import routes from "../react-router.config";
 
 const router = createBrowserRouter(routes);
 
-createRoot(document.getElementById("root")!).render(
-  <RouterProvider router={router} />
-);
+createRoot(document.getElementById("root")!)
+  .render(<RouterProvider router={router} />);

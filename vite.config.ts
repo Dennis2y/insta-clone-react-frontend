@@ -8,7 +8,7 @@ export default defineConfig({
     tsconfigPaths(),
   ],
   build: {
-    outDir: "build/client",
+    outDir: "build",
     emptyOutDir: true,
   },
 });

@@ -35,7 +35,8 @@ export default function UploadButton({ onUploaded, label = "Upload Image" }: Pro
 
       // If you have Vite proxy -> use "/api/upload"
       // Otherwise (no proxy) your backend CORS is enabled, so this also works:
-      const res = await fetch("http://127.0.0.1:3000/api/upload", {
+      const res = await fetch((``.replace(//+
+,"") + "/api/upload"), {
         method: "POST",
         body: form,
       });

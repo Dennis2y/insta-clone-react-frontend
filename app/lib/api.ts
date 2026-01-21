@@ -1,10 +1,30 @@
-export async function fetchJSON(request: Request, path: string) {
-  // IMPORTANT: use request.url so it becomes http://localhost:5173/api/... (then Vite proxy forwards to 3000)
-  const url = new URL(path, request.url);
-  const res = await fetch(url);
+const raw = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:3000";
+export const API_BASE = raw.replace(/\/+$/, "");
+
+export function apiUrl(path: string) {
+  if (!path.startsWith("/")) path = "/" + path;
+  return API_BASE + path;
+}
+
+export async function fetchJSON<T>(request: Request, path: string): Promise<T> {
+  const url = apiUrl(path);
+
+  const res = await fetch(url, {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  const ct = res.headers.get("content-type") || "";
+  const text = await res.text();
+
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Response(text || `Request failed: ${res.status}`, { status: res.status });
+    throw new Error(`HTTP ${res.status} ${res.statusText} — ${text.slice(0, 200)}`);
   }
-  return res.json();
+
+  if (!ct.includes("application/json")) {
+    throw new Error(`Expected JSON, got "${ct || "unknown"}" — ${text.slice(0, 200)}`);
+  }
+
+  return JSON.parse(text) as T;
 }

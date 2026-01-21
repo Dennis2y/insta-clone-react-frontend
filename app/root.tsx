@@ -1,27 +1,13 @@
-import type { LinksFunction } from "react-router";
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
-import themeCss from "./styles/theme.css?url";
-import appCss from "./styles/app.css?url";
-import taggedCss from "./styles/tagged.css?url";
+import { Outlet } from "react-router-dom";
 
-export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: themeCss },
-  { rel: "stylesheet", href: appCss },
-  { rel: "stylesheet", href: taggedCss },
-];
-
-export default function App() {
+export default function RootLayout() {
   return (
-    <html lang="en">
-      <head>
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
-      </body>
-    </html>
+    <div style={{ minHeight: "100vh", background: "#fafafa" }}>
+      <h1 style={{ textAlign: "center" }}>
+        RootLayout is rendering ✅
+      </h1>
+
+      <Outlet />
+    </div>
   );
 }

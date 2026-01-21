@@ -1,5 +1,1 @@
-import type { Config } from "@react-router/dev/config";
-
-export default {
-  appDirectory: "app",
-} satisfies Config;
+export { routes } from "./react-router.config.tsx";

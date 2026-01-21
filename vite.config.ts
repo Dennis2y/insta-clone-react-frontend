@@ -4,6 +4,12 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
+  server: {
+    proxy: {
+      "/api": { target: "http://127.0.0.1:3000", changeOrigin: true },
+      "/uploads": { target: "http://127.0.0.1:3000", changeOrigin: true },
+    },
+  },
   build: {
     outDir: "dist",
     emptyOutDir: true,

@@ -15,7 +15,7 @@ type Post = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  return fetchJSON(request, "/api/posts");
+  return fetchJSON("/api/posts");
 }
 
 async function uploadFile(file: File) {

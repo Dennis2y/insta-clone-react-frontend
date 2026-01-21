@@ -14,7 +14,7 @@ type TaggedItem = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  return fetchJSON(request, "/api/tagged/grid");
+  return fetchJSON("/api/tagged/grid");
 }
 
 export default function TaggedRoute() {

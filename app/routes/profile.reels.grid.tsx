@@ -4,7 +4,7 @@ import { fetchJSON } from "../lib/api";
 type Reel = { id: number; videoUrl: string; posterUrl: string; durationSec: number };
 
 export async function loader({ request }: { request: Request }) {
-  return fetchJSON(request, "/api/reels/grid");
+  return fetchJSON("/api/reels/grid");
 }
 
 function ReelCard({ r }: { r: Reel }) {

@@ -5,7 +5,7 @@ import { resolveMediaUrl } from "~/lib/media";
 type Post = { id: number; username: string; caption: string; img_url: string };
 
 export async function loader({ request }: { request: Request }) {
-  return fetchJSON(request, "/api/posts");
+  return fetchJSON("/api/posts");
 }
 
 function Card({ p }: { p: Post }) {

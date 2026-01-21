@@ -3,7 +3,7 @@ import { fetchJSON } from "../lib/api";
 import TaggedGrid from "../components/TaggedGrid";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  return fetchJSON(request, "/api/tagged/grid");
+  return fetchJSON("/api/tagged/grid");
 }
 
 export default function Route() {

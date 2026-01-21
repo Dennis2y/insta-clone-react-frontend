@@ -5,7 +5,7 @@ import { resolveMediaUrl } from "~/lib/media";
 type Highlight = { id: number; title: string; cover: string };
 
 export async function loader({ request }: { request: Request }) {
-  return fetchJSON(request, "/api/highlights");
+  return fetchJSON("/api/highlights");
 }
 
 export default function HighlightsRoute() {

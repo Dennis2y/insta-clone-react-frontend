@@ -1,10 +1,19 @@
+/**
+ * Axios client used by React Router loaders + browser.
+ *
+ * IMPORTANT:
+ * - React Router loaders can run server-side in dev.
+ * - Therefore baseURL MUST be absolute.
+ * - Backend API is served at: http://127.0.0.1:3000/api
+ *
+ * Usage:
+ *   api.get("/reels/grid")  -> http://127.0.0.1:3000/api/reels/grid
+ *   api.get("/tagged/grid") -> http://127.0.0.1:3000/api/tagged/grid
+ */
+
 import axios from "axios";
 
-// React Router loaders run on the server (Node) during dev/SSR,
-// so we must use an absolute URL there.
-// In the browser we can use Vite's proxy via "/api".
-const isServer = typeof window === "undefined";
-
 export const api = axios.create({
-  baseURL: isServer ? "http://127.0.0.1:3000" : "/api",
+  baseURL: "http://127.0.0.1:3000/api",
+  headers: { Accept: "application/json" },
 });
